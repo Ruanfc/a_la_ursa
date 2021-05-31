@@ -1,0 +1,1 @@
+/home/ruan_fc/msp430-gcc/include/msp430g2553.ld

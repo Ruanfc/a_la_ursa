@@ -1,0 +1,33 @@
+simio add gpio port1
+simio config port1 verbose
+simio config port1 irq 2
+simio add gpio port2
+simio config port2 base 0x28
+simio config port2 irq 3
+simio config port2 verbose
+simio add hwmult hmult1
+simio add timer timer0
+simio add timer timer1
+simio config timer1 base 0x180
+simio config timer0 irq0 9
+simio config timer0 irq1 8
+simio config timer1 irq0 13
+simio config timer1 irq1 12
+simio config timer1 iv 0x11e
+simio add tracer tracer1
+simio config tracer1 verbose
+simio add console p1in
+simio config p1in base 0x20
+simio add console p2in
+simio config p2in base 0x28
+simio add console p1out
+simio config p1out base 0x21
+simio add console p2out
+simio config p2out base 0x29
+alias port1High "simio config port1 set 1 1"
+alias port1Low "simio config port1 set 1 0"
+alias port2High "simio config port2 set 0 1"
+alias port2Low "simio config port2 set 0 0"
+erase all
+prog MSP430G2553.out
+gdb
