@@ -86,7 +86,7 @@ int interrupt_aux = 0, iter=0;
 int deltaTx = MEAN_PPM_VAL, deltaTy = MEAN_PPM_VAL;
 int deltaTxmin = MIN_PPM_VAL, deltaTxmax = MAX_PPM_VAL;
 int deltaTymin = MIN_PPM_VAL, deltaTymax = MAX_PPM_VAL;
-int newDeltaTxmax=12000, newDeltaTymax=12000 ,newDeltaTymin=12000 ,newDeltaTxmin=12000;
+int newDeltaTxmax=12000, newDeltaTymax=12000 ,newDeltaTymin=12000 ,newDeltaTxmin=12000, newDeltaTx=12000, newDeltaTy=12000;
 int deltaTxmean = MEAN_PPM_VAL;
 int deltaTymean = MEAN_PPM_VAL;
 
@@ -279,18 +279,36 @@ void callibrate(int state)
 		//BUSY e ERASE são automaticamente limpos ao fim do ciclo
 		FCTL3 = FWKEY; //?????????????????
 		
-		//Insere novos valores máximos
-		flash_ww(SEGD, newDeltaTymax);
-		flash_ww(SEGD+1, newDeltaTxmax);
-		//Insere novos valores mínimos
-		flash_ww(SEGD+2,newDeltaTymin); 
-		flash_ww(SEGD+3,newDeltaTxmin);
+		//Joga valores antigos para trás;
+		flash_ww(SEGD+2,*SEGD); 
+		flash_ww(SEGD+3,*(SEGD+1));
+		//Insere novos valores
+		flash_ww(SEGD, newDeltaTx);
+		flash_ww(SEGD+1, newDeltaTy);
 	}
 
-	deltaTymax = *SEGD;
-	deltaTxmax = *(SEGD+1);
-	deltaTymin = *(SEGD+2);
-	deltaTxmin = *(SEGD+3);
+	//Organiza emordem crescente e determina os valores máximos e mínimos
+	if (*SEGD > *(SEGD+2))
+	{
+		deltaTxmax = *SEGD;
+		deltaTxmin = *(SEGD+2);
+		
+	}else
+	{
+		deltaTxmin = *SEGD;
+		deltaTxmax = *(SEGD+2);
+	}
+	// repete para os valores no eixo y	
+	if (*(SEGD+1) > *(SEGD+3))
+	{
+		deltaTxmax = *(SEGD+1);
+		deltaTxmin = *(SEGD+3);
+		
+	}else
+	{
+		deltaTxmin = *(SEGD+3);
+		deltaTxmax = *(SEGD+1);
+	}
 	
         //Determina escala de para os eixos x e y
 	escalaX = div(totalTicks, deltaTxmax - deltaTxmin);
@@ -314,12 +332,16 @@ int main(void)
 	WDTCTL = watchdog_setup;		// Configura cachorro
 	//WDTCTL = watchdog_hold;
 	//IE1 |= WDTIE; //Habilita interrupção do wdt
+
+	// Leitura de calibração
+	//callibrate(0);
 	
 	DCOCTL = 0;                     // Select lowest DCOx and MODx
 	//BCSCTL1 = CALBC1_8MHZ;          // Set range
 	//DCOCTL = CALDCO_8MHZ;           // Set DCO step + modulation
         BCSCTL1 = 13; //RSELx = 13; XT2OFF = 0
-        DCOCTL = (5 << 5) | 0; // DCOx = 5; MODx = 0;
+        DCOCTL = (4 << 5) | 10; // DCOx = 5; MODx = 0;
+		// No controle pistola usar TRIM : CH1= N00 e CH2= B23; D/R: CH2 = 90%
 	
 	//Manipulação de ports entrada saída
 	P1DIR &= ~INPUT_PINS;
@@ -396,9 +418,11 @@ int main(void)
 			//Salva x e y em um array de ARRAYMAX el. para depois
 			//tirar a média e então executar handler2
 			valoresToArray(x,y);
+
+			//Falta decidir se os valores ainda devem ser filtrados aos motores
 			
 			//Gerenciamento para tratamento de ppm + canal ED
-			//handler2();
+			handler2();
 			interrupt_flags &= ~2;
 		}
 		if (menu & 4)
@@ -416,9 +440,24 @@ int main(void)
 		}
 		  if (menu & 16)
 		  {
-		  callibrate(-1);
-		  callibrated = HIGH;
-		  interrupt_flags &= ~16;
+			// Obtem a média móvel dos deltaTx e deltaTy das últimas ARRAYMAX=8 amostras
+			int xmean = 0;
+			int ymean = 0;
+			for (int i = 0; i < ARRAYMAX; i++)
+			{
+				xmean += Xarray[i];
+				ymean += Yarray[i];
+			}
+			xmean = xmean >> 3;
+			ymean = ymean >> 3;
+			
+			newDeltaTx = xmean + deltaTxmean; 
+			newDeltaTy = ymean + deltaTymean; 
+
+			
+			callibrate(-1);
+			callibrated = HIGH;
+			interrupt_flags &= ~16;
 		  }
 	}// Fim loop
 	return 0;
