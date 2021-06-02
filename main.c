@@ -24,9 +24,9 @@
  *            P1.3  	 --| 5        16 |--RST
  *            P1.4  LED_R--| 6        15 |--NBATS	P1.7
  *            P1.5  LED_G--| 7        14 |--NBATI   P1.6
- *            P2.0  LED_B--| 8        13 |--MDA     P2.5
- *            P2.1    MER--| 9        12 |--MDR     P2.4
- *            P2.2    MEA--| 10       11 |-- 	  	P2.3
+ *            P2.0  LED_B--| 8        13 |--MDR     P2.5
+ *            P2.1    MEA--| 9        12 |--MDA     P2.4
+ *            P2.2    MER--| 10       11 |-- 	  	P2.3
  *                         ---------------
  **********************************************************/
 
@@ -44,10 +44,11 @@
 #define LED_B BIT0 		//P2.0 -> Sem sinal
 //#define CAL BIT3
 
-unsigned int MER = BIT1;
-unsigned int MEA = BIT2;
-unsigned int MDR = BIT4;
-unsigned int MDA = BIT5;
+//Não sei o porquê, mas essa tem que ser a ordem para o programa dar certo.
+unsigned int MER = BIT2;
+unsigned int MEA = BIT1;
+unsigned int MDR = BIT5;
+unsigned int MDA = BIT4;
 
 #define INPUT_PINS (FLIP | IN_AR | IN_DE | NBATI | NBATS)
 #define OUTPUT_PINS_1 ( LED_R | LED_G)						//port1
@@ -140,11 +141,11 @@ void valoresToArray(int x, int y)
 // --- Captura do canal ED e atualização de pwm ---
 void handler2(void)
 {
-	register int _y = mult(ab(y),escalaY);
-	register int _x = mult(ab(x),escalaX);
+	register int _y = ab(y);
+	register int _x = ab(x);
 	register int modulo = _y - _x;
 	register int _y_x = ab(modulo);
-	if (_y_x < (100)) _x = _y;
+	if (_y_x < (200)) _x = _y;
 	if (x < 0) x = -_x;
 	else x = _x;
 	
@@ -242,25 +243,27 @@ void handler4 (void)
 
 // ===============================================================
 // --- FLIP ---
+// Ainda precisa de ajustes. Pelo visto apenas trocar esta variáveis não
+// dá certo.
 void handler8()
 {
 	if (flipState)
 	{
 		pwmLptr = (unsigned int*)&TA1CCR2;
 		pwmRptr = (unsigned int*)&TA1CCR1;
-		MER = BIT1;
-		MEA = BIT2;
-		MDR = BIT4;
-		MDA = BIT5;
+		MER = BIT2;
+		MEA = BIT1;
+		MDR = BIT5;
+		MDA = BIT4;
 	}
 	else
 	{
 		pwmLptr = (unsigned int*)&TA1CCR1;
 		pwmRptr = (unsigned int*)&TA1CCR2;
-		MER = BIT5;
-		MEA = BIT4;
-		MDR = BIT2;
-		MDA = BIT1;
+		MER = BIT4;
+		MEA = BIT5;
+		MDR = BIT1;
+		MDA = BIT2;
 	}
 }
 // ===============================================================
