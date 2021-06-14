@@ -100,7 +100,6 @@ volatile unsigned int INCH_var = INCH_7;
 
 // =================================================================
 // --- Variáveis para o flip
-#define flipThreshold 300 //400//649 //50 (tensão_de_limiar/(ref+))*1024
 volatile int flipCounter=0;
 int flipState = 0;
 unsigned int* pwmLptr = (unsigned int*)&TA1CCR1;
@@ -247,6 +246,7 @@ void handler4 (void)
 // dá certo.
 void handler8()
 {
+	flipState = (flipCounter > 9 ) ? HIGH : LOW;
 	if (flipState)
 	{
 		pwmLptr = (unsigned int*)&TA1CCR2;
@@ -265,6 +265,7 @@ void handler8()
 		MDR = BIT1;
 		MDA = BIT2;
 	}
+		flipCounter = 0;
 }
 // ===============================================================
 // --- Procedimento de calibração
@@ -353,11 +354,14 @@ int main(void)
 	
 	
 	//Configuração de port1: Pinos 1 e 2 configurados para captura
-	P1REN |= PPM_PINS;	//Habilita resistores internos
-	P1OUT &= ~PPM_PINS;	//Configura como pull down
+	P1REN |= PPM_PINS | FLIP;	//Habilita resistores internos
+	P1OUT &= ~(PPM_PINS | FLIP);	//Configura como pull down
 	P1SEL |= PPM_PINS;	//Timer0_A3.CCI0A e Timer0_A3.CCI1A
 	//P1OUT |= LED_G; 	//LED_G = HIGH e LED_B = LOW no início
 	P1OUT &= ~LED_R;
+	// Habilita interrupção de port no pino P1.0 em borda de descida
+	P1IE |= 1;
+	P1IES |= 1;
 	
 	//Garante que os motores vão estar desabilitados
 	P2SEL &= ~MOTOR_PINS;
@@ -381,7 +385,10 @@ int main(void)
 	TA1CCTL1 = OUTMOD_7; // Saída em reset/set
 	TA1CCTL2 = OUTMOD_7; // Saída em reset/set
 	TA1CCR0 = totalTicks; //Registrador para comparação
-	TA1CTL |= TASSEL_2 | MC_1; // SMCLK (Submain clock 8MHz) UPMODE 
+    // SMCLK (Submain clock 8MHz) UPMODE ; habilita ISR p/ countFlip
+	TA1CTL |= TASSEL_2 | MC_1 | TAIE;
+
+
 	
 	//Configuração do ADC10
 	ADC10CTL0 =
@@ -396,7 +403,7 @@ int main(void)
 		ADC10SSEL_2 |	//Source SELect: MCLK
 		CONSEQ_0 ;		//Single-chanel-single-conversion
 		
-	ADC10AE0 = FLIP | NBATI | NBATS; //Habilita os pinos para leitura
+	ADC10AE0 = NBATI | NBATS; //Habilita os pinos para leitura
 	
 	__bis_SR_register(GIE);		// General Interrupt Enable;	
 	
@@ -462,6 +469,8 @@ int main(void)
 			callibrated = HIGH;
 			interrupt_flags &= ~16;
 		  }
+
+
 	}// Fim loop
 	return 0;
 } //Fim main
@@ -520,13 +529,6 @@ void __attribute__ ((interrupt(TIMER0_A1_VECTOR))) input2(void)
 				interrupt_flags |= 4;
 				blinkCounter = 0;
 			}
-			//Polling para flip: 6 ≃ 50ms /(2^16/8e6)
-			if ((++flipCounter) >= 6)
-			{
-				ADC10CTL1 &= ~0xf000;
-				ADC10CTL0 |= (ENC | ADC10SC);
-				flipCounter = 0;
-			}
 
 			//Tira média dos valores e manda aos motores
 			if (arrayCounter >= ARRAYMAX - 1)
@@ -574,6 +576,16 @@ void __attribute__ ((interrupt(TIMER0_A1_VECTOR))) input2(void)
 }// fim interrupt
 
 // ================================================================
+// --- Interrupção do timer 1 (TAIFG do TA1IV) para contar tempo do flip
+void __attribute__ ((interrupt(TIMER1_A1_VECTOR))) countFlip()
+{
+	if(TA1IV == TA1IV_TAIFG)
+	{
+	   if (P1IN & FLIP)  flipCounter ++;
+	}
+}
+
+// ================================================================
 // --- ISR do ADC10 ---
 void __attribute__ ((interrupt(ADC10_VECTOR))) adc_interrupt(void)
 {
@@ -588,45 +600,6 @@ void __attribute__ ((interrupt(ADC10_VECTOR))) adc_interrupt(void)
 			ADC_acc[1] = ADC10MEM;
 			INCH_var ^= (INCH_6 ^ INCH_7);
 			break;
-		case INCH_0: //flip
-			flipState = (ADC10MEM > flipThreshold)? HIGH : LOW;
-			interrupt_flags |= 8;
-			//If not callibrated, callibrate it
-			if (!callibrated)
-			{
-				//Para os motores
-//				*pwmLptr = 0;
-//				*pwmRptr = 0;
-				//Led fica amarelo
-				P1OUT |= OUTPUT_PINS_1;
-				P2OUT &= ~LED_B;
-				//Verfica se o controle está no centro
-				//if ((x<1600)&&(x>-1600)&&
-				//	(y<1600)&&(y>-1600)) callibrateCounter++;
-				//else
-				//{
-				if (flipState)
-				{
-					callibrateCounter++;
-					if (deltaTx > newDeltaTxmax)
-						newDeltaTxmax = deltaTx;
-					if (deltaTx < newDeltaTxmin)
-						newDeltaTxmin = deltaTx;
-					if (deltaTy > newDeltaTymax)
-						newDeltaTymax = deltaTy;
-					if (deltaTy < newDeltaTymin)
-						newDeltaTymin = deltaTy;
-				//	callibrateCounter = 0;
-				}
-				//Se estiver no centro por 3 segundos, salva valores
-				//if (callibrateCounter >= 610) //3seg
-				else
-				{
-//					callibrate(callibrateCounter>10);
-					callibrated  = HIGH;
-				}
-			}
-			break;
 	}
 	ADC10CTL1|= INCH_var; //Restabelece para os pinos de bateria
 	ADC10CTL0 |= ADC10ON;
@@ -639,3 +612,15 @@ void __attribute__ ((interrupt(PORT2_VECTOR))) calib_interrupt(void)
 interrupt_flags |= 16;	
 }
 */
+
+//Interrupção causada pelo pino P1.0
+void __attribute__ ((interrupt(PORT1_VECTOR))) flipTrigger(void)
+{
+	// Quando detecta borda de descida (vide ...), reinicia a contagem
+	// e habilita permuta de motores em handler8
+	if (P1IFG & 1)
+	{
+		interrupt_flags |= 8;
+		P1IFG = 0;
+	}
+}

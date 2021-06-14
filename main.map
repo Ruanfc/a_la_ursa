@@ -130,7 +130,10 @@ __interrupt_vector_2
  *(__interrupt_vector_2)
 
 __interrupt_vector_3
+                0x000000000000ffe4        0x2
  *(__interrupt_vector_3)
+ __interrupt_vector_3
+                0x000000000000ffe4        0x2 main.o
  *(__interrupt_vector_port1)
 
 __interrupt_vector_4
@@ -178,7 +181,10 @@ __interrupt_vector_12
  *(__interrupt_vector_comparatora)
 
 __interrupt_vector_13
+                0x000000000000fff8        0x2
  *(__interrupt_vector_13)
+ __interrupt_vector_13
+                0x000000000000fff8        0x2 main.o
  *(__interrupt_vector_timer1_a1)
 
 __interrupt_vector_14
@@ -230,7 +236,7 @@ __reset_vector  0x000000000000fffe        0x2
  *(SORT_BY_NAME(.dtors.*))
  *(.dtors)
 
-.text           0x000000000000c000      0x8b2
+.text           0x000000000000c000      0x8b4
                 0x000000000000c000                . = ALIGN (0x2)
                 0x000000000000c000                PROVIDE (_start = .)
  *(SORT_BY_NAME(.crt_*))
@@ -247,82 +253,84 @@ __reset_vector  0x000000000000fffe        0x2
                 0x000000000000c026        0x6 /home/ruan_fc/msp430-gcc/bin/../lib/gcc/msp430-elf/9.2.0/../../../../msp430-elf/lib/430/libcrt.a(crt_main.o)
                 0x000000000000c026                __crt0_call_main
  *(.lowtext .text .stub .text.* .gnu.linkonce.t.* .text:*)
- .text          0x000000000000c02c      0x672 main.o
+ .text          0x000000000000c02c      0x674 main.o
                 0x000000000000c02c                valoresToArray
                 0x000000000000c050                handler2
                 0x000000000000c158                handler4
                 0x000000000000c206                handler8
-                0x000000000000c208                callibrate
-                0x000000000000c2dc                main
-                0x000000000000c466                input1
-                0x000000000000c494                input2
-                0x000000000000c5e4                adc_interrupt
- .text          0x000000000000c69e       0x3e user_defined.o
-                0x000000000000c69e                flash_ww
-                0x000000000000c6bc                comparar
- .text          0x000000000000c6dc       0xf2 multi.elf
-                0x000000000000c6dc                ab
-                0x000000000000c6e8                map
-                0x000000000000c778                mult
-                0x000000000000c7a0                div
- .text          0x000000000000c7ce       0x10 /home/ruan_fc/msp430-gcc/bin/../lib/gcc/msp430-elf/9.2.0/430/libgcc.a(epilogue.o)
-                0x000000000000c7ce                __mspabi_func_epilog_7
-                0x000000000000c7d0                __mspabi_func_epilog_6
-                0x000000000000c7d2                __mspabi_func_epilog_5
-                0x000000000000c7d4                __mspabi_func_epilog_4
-                0x000000000000c7d6                __mspabi_func_epilog_3
-                0x000000000000c7d8                __mspabi_func_epilog_2
-                0x000000000000c7da                __mspabi_func_epilog_1
+                0x000000000000c268                callibrate
+                0x000000000000c33c                main
+                0x000000000000c4d4                input1
+                0x000000000000c502                input2
+                0x000000000000c62c                countFlip
+                0x000000000000c648                adc_interrupt
+                0x000000000000c690                flipTrigger
+ .text          0x000000000000c6a0       0x3e user_defined.o
+                0x000000000000c6a0                flash_ww
+                0x000000000000c6be                comparar
+ .text          0x000000000000c6de       0xf2 multi.elf
+                0x000000000000c6de                ab
+                0x000000000000c6ea                map
+                0x000000000000c77a                mult
+                0x000000000000c7a2                div
+ .text          0x000000000000c7d0       0x10 /home/ruan_fc/msp430-gcc/bin/../lib/gcc/msp430-elf/9.2.0/430/libgcc.a(epilogue.o)
+                0x000000000000c7d0                __mspabi_func_epilog_7
+                0x000000000000c7d2                __mspabi_func_epilog_6
+                0x000000000000c7d4                __mspabi_func_epilog_5
+                0x000000000000c7d6                __mspabi_func_epilog_4
+                0x000000000000c7d8                __mspabi_func_epilog_3
+                0x000000000000c7da                __mspabi_func_epilog_2
+                0x000000000000c7dc                __mspabi_func_epilog_1
  .text.__mspabi_sral_n
-                0x000000000000c7de       0x3e /home/ruan_fc/msp430-gcc/bin/../lib/gcc/msp430-elf/9.2.0/430/libgcc.a(srai.o)
-                0x000000000000c7de                __mspabi_sral_15
-                0x000000000000c7e2                __mspabi_sral_14
-                0x000000000000c7e6                __mspabi_sral_13
-                0x000000000000c7ea                __mspabi_sral_12
-                0x000000000000c7ee                __mspabi_sral_11
-                0x000000000000c7f2                __mspabi_sral_10
-                0x000000000000c7f6                __mspabi_sral_9
-                0x000000000000c7fa                __mspabi_sral_8
-                0x000000000000c7fe                __mspabi_sral_7
-                0x000000000000c802                __mspabi_sral_6
-                0x000000000000c806                __mspabi_sral_5
-                0x000000000000c80a                __mspabi_sral_4
-                0x000000000000c80e                __mspabi_sral_3
-                0x000000000000c812                __mspabi_sral_2
-                0x000000000000c816                __mspabi_sral_1
+                0x000000000000c7e0       0x3e /home/ruan_fc/msp430-gcc/bin/../lib/gcc/msp430-elf/9.2.0/430/libgcc.a(srai.o)
+                0x000000000000c7e0                __mspabi_sral_15
+                0x000000000000c7e4                __mspabi_sral_14
+                0x000000000000c7e8                __mspabi_sral_13
+                0x000000000000c7ec                __mspabi_sral_12
+                0x000000000000c7f0                __mspabi_sral_11
+                0x000000000000c7f4                __mspabi_sral_10
+                0x000000000000c7f8                __mspabi_sral_9
+                0x000000000000c7fc                __mspabi_sral_8
+                0x000000000000c800                __mspabi_sral_7
+                0x000000000000c804                __mspabi_sral_6
+                0x000000000000c808                __mspabi_sral_5
+                0x000000000000c80c                __mspabi_sral_4
+                0x000000000000c810                __mspabi_sral_3
+                0x000000000000c814                __mspabi_sral_2
+                0x000000000000c818                __mspabi_sral_1
  .text.__mspabi_srli_n
-                0x000000000000c81c       0x3e /home/ruan_fc/msp430-gcc/bin/../lib/gcc/msp430-elf/9.2.0/430/libgcc.a(srli.o)
-                0x000000000000c81c                __mspabi_srli_15
-                0x000000000000c820                __mspabi_srli_14
-                0x000000000000c824                __mspabi_srli_13
-                0x000000000000c828                __mspabi_srli_12
-                0x000000000000c82c                __mspabi_srli_11
-                0x000000000000c830                __mspabi_srli_10
-                0x000000000000c834                __mspabi_srli_9
-                0x000000000000c838                __mspabi_srli_8
-                0x000000000000c83c                __mspabi_srli_7
-                0x000000000000c840                __mspabi_srli_6
-                0x000000000000c844                __mspabi_srli_5
-                0x000000000000c848                __mspabi_srli_4
-                0x000000000000c84c                __mspabi_srli_3
-                0x000000000000c850                __mspabi_srli_2
-                0x000000000000c854                __mspabi_srli_1
- .text.memmove  0x000000000000c85a       0x46 /home/ruan_fc/msp430-gcc/bin/../lib/gcc/msp430-elf/9.2.0/../../../../msp430-elf/lib/430/libc.a(lib_a-memmove.o)
-                0x000000000000c85a                memmove
- .text.memset   0x000000000000c8a0       0x12 /home/ruan_fc/msp430-gcc/bin/../lib/gcc/msp430-elf/9.2.0/../../../../msp430-elf/lib/430/libc.a(lib_a-memset.o)
-                0x000000000000c8a0                memset
+                0x000000000000c81e       0x3e /home/ruan_fc/msp430-gcc/bin/../lib/gcc/msp430-elf/9.2.0/430/libgcc.a(srli.o)
+                0x000000000000c81e                __mspabi_srli_15
+                0x000000000000c822                __mspabi_srli_14
+                0x000000000000c826                __mspabi_srli_13
+                0x000000000000c82a                __mspabi_srli_12
+                0x000000000000c82e                __mspabi_srli_11
+                0x000000000000c832                __mspabi_srli_10
+                0x000000000000c836                __mspabi_srli_9
+                0x000000000000c83a                __mspabi_srli_8
+                0x000000000000c83e                __mspabi_srli_7
+                0x000000000000c842                __mspabi_srli_6
+                0x000000000000c846                __mspabi_srli_5
+                0x000000000000c84a                __mspabi_srli_4
+                0x000000000000c84e                __mspabi_srli_3
+                0x000000000000c852                __mspabi_srli_2
+                0x000000000000c856                __mspabi_srli_1
+ .text.memmove  0x000000000000c85c       0x46 /home/ruan_fc/msp430-gcc/bin/../lib/gcc/msp430-elf/9.2.0/../../../../msp430-elf/lib/430/libc.a(lib_a-memmove.o)
+                0x000000000000c85c                memmove
+ .text.memset   0x000000000000c8a2       0x12 /home/ruan_fc/msp430-gcc/bin/../lib/gcc/msp430-elf/9.2.0/../../../../msp430-elf/lib/430/libc.a(lib_a-memset.o)
+                0x000000000000c8a2                memset
  *(.text.*personality*)
  *(.gnu.warning)
  *(.interp .hash .dynsym .dynstr .gnu.version*)
                 [!provide]                        PROVIDE (__etext = .)
                 [!provide]                        PROVIDE (_etext = .)
                 [!provide]                        PROVIDE (etext = .)
-                0x000000000000c8b2                . = ALIGN (0x2)
+                0x000000000000c8b4                . = ALIGN (0x2)
  *(.init)
  *(.fini)
  *(.tm_clone_table)
 
-.data           0x0000000000000200       0x34 load address 0x000000000000c8b2
+.data           0x0000000000000200       0x34 load address 0x000000000000c8b4
                 0x0000000000000200                . = ALIGN (0x2)
                 0x0000000000000200                PROVIDE (__datastart = .)
  *(.jcr)
@@ -367,10 +375,10 @@ __reset_vector  0x000000000000fffe        0x2
                 0x0000000000000234                _edata = .
                 [!provide]                        PROVIDE (edata = .)
                 [!provide]                        PROVIDE (__dataend = .)
-                0x000000000000c8b2                PROVIDE (__romdatastart = LOADADDR (.data))
+                0x000000000000c8b4                PROVIDE (__romdatastart = LOADADDR (.data))
                 0x0000000000000034                PROVIDE (__romdatacopysize = SIZEOF (.data))
 
-.bss            0x0000000000000234       0x4a load address 0x000000000000c8e6
+.bss            0x0000000000000234       0x4a load address 0x000000000000c8e8
                 0x0000000000000234                . = ALIGN (0x2)
                 0x0000000000000234                PROVIDE (__bssstart = .)
  *(.dynbss)
@@ -404,7 +412,7 @@ __reset_vector  0x000000000000fffe        0x2
                 [!provide]                        PROVIDE (__bssend = .)
                 0x000000000000004a                PROVIDE (__bsssize = SIZEOF (.bss))
 
-.noinit         0x000000000000027e        0x0 load address 0x000000000000c8e6
+.noinit         0x000000000000027e        0x0 load address 0x000000000000c8e8
                 0x000000000000027e                . = ALIGN (0x2)
                 [!provide]                        PROVIDE (__noinit_start = .)
  *(.noinit)
@@ -412,7 +420,7 @@ __reset_vector  0x000000000000fffe        0x2
                 [!provide]                        PROVIDE (__noinit_end = .)
                 0x000000000000027e                end = .
 
-.heap           0x000000000000027e        0x4 load address 0x000000000000c8e6
+.heap           0x000000000000027e        0x4 load address 0x000000000000c8e8
                 0x000000000000027e                . = ALIGN (0x2)
                 0x000000000000027e                __heap_start__ = .
                 0x000000000000027e                _end = __heap_start__
@@ -518,32 +526,32 @@ __reset_vector  0x000000000000fffe        0x2
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x0000000000000000     0x11b2
+.debug_info     0x0000000000000000     0x11e0
  *(.debug_info .gnu.linkonce.wi.*)
- .debug_info    0x0000000000000000      0xc00 main.o
- .debug_info    0x0000000000000c00      0x5b2 user_defined.o
+ .debug_info    0x0000000000000000      0xc2e main.o
+ .debug_info    0x0000000000000c2e      0x5b2 user_defined.o
 
-.debug_abbrev   0x0000000000000000      0x36e
+.debug_abbrev   0x0000000000000000      0x386
  *(.debug_abbrev)
- .debug_abbrev  0x0000000000000000      0x27d main.o
- .debug_abbrev  0x000000000000027d       0xf1 user_defined.o
+ .debug_abbrev  0x0000000000000000      0x295 main.o
+ .debug_abbrev  0x0000000000000295       0xf1 user_defined.o
 
-.debug_line     0x0000000000000000     0x122f
+.debug_line     0x0000000000000000     0x1273
  *(.debug_line .debug_line.* .debug_line_end)
- .debug_line    0x0000000000000000     0x10d9 main.o
- .debug_line    0x00000000000010d9      0x156 user_defined.o
+ .debug_line    0x0000000000000000     0x111d main.o
+ .debug_line    0x000000000000111d      0x156 user_defined.o
 
-.debug_frame    0x0000000000000000      0x258
+.debug_frame    0x0000000000000000      0x284
  *(.debug_frame)
- .debug_frame   0x0000000000000000      0x224 main.o
- .debug_frame   0x0000000000000224       0x34 user_defined.o
+ .debug_frame   0x0000000000000000      0x250 main.o
+ .debug_frame   0x0000000000000250       0x34 user_defined.o
 
-.debug_str      0x0000000000000000      0x672
+.debug_str      0x0000000000000000      0x684
  *(.debug_str)
- .debug_str     0x0000000000000000      0x644 main.o
-                                        0x650 (size before relaxing)
- .debug_str     0x0000000000000644       0x2e user_defined.o
-                                        0x42b (size before relaxing)
+ .debug_str     0x0000000000000000      0x656 main.o
+                                        0x662 (size before relaxing)
+ .debug_str     0x0000000000000656       0x2e user_defined.o
+                                        0x427 (size before relaxing)
 
 .debug_loc      0x0000000000000000      0x244
  *(.debug_loc)
@@ -588,12 +596,12 @@ __reset_vector  0x000000000000fffe        0x2
                 0x0000000000000128                PROVIDE (FCTL1 = 0x128)
                 0x000000000000012a                PROVIDE (FCTL2 = 0x12a)
                 0x000000000000012c                PROVIDE (FCTL3 = 0x12c)
-                [!provide]                        PROVIDE (P1IN = 0x20)
+                0x0000000000000020                PROVIDE (P1IN = 0x20)
                 0x0000000000000021                PROVIDE (P1OUT = 0x21)
                 0x0000000000000022                PROVIDE (P1DIR = 0x22)
-                [!provide]                        PROVIDE (P1IFG = 0x23)
-                [!provide]                        PROVIDE (P1IES = 0x24)
-                [!provide]                        PROVIDE (P1IE = 0x25)
+                0x0000000000000023                PROVIDE (P1IFG = 0x23)
+                0x0000000000000024                PROVIDE (P1IES = 0x24)
+                0x0000000000000025                PROVIDE (P1IE = 0x25)
                 0x0000000000000026                PROVIDE (P1SEL = 0x26)
                 [!provide]                        PROVIDE (P1SEL2 = 0x41)
                 0x0000000000000027                PROVIDE (P1REN = 0x27)
@@ -621,7 +629,7 @@ __reset_vector  0x000000000000fffe        0x2
                 0x0000000000000172                PROVIDE (TA0CCR0 = 0x172)
                 0x0000000000000174                PROVIDE (TA0CCR1 = 0x174)
                 [!provide]                        PROVIDE (TA0CCR2 = 0x176)
-                [!provide]                        PROVIDE (TA1IV = 0x11e)
+                0x000000000000011e                PROVIDE (TA1IV = 0x11e)
                 0x0000000000000180                PROVIDE (TA1CTL = 0x180)
                 [!provide]                        PROVIDE (TA1CCTL0 = 0x182)
                 0x0000000000000184                PROVIDE (TA1CCTL1 = 0x184)
